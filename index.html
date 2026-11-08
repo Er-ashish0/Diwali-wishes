@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0218" />
+    <title>Happy Diwali 🪔</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Mukta:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0b0218;
+        --gold: #ffcb5c;
+        --rose: #ff5d8f;
+        --ink: #fff1d6;
+        --card: rgba(18, 5, 34, 0.88);
+        --serif: "Cormorant Garamond", Georgia, serif;
+        --sans: Mukta, "Segoe UI", system-ui, sans-serif;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #09020f;
+        }
+      }
+
+      :root[data-theme="dark"] {
+        --bg: #09020f;
+      }
+
+      html {
+        height: 100%;
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(#0b0218, #26073a 62%, #3b0b3e);
+        color: var(--ink);
+        font-family: var(--sans);
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 1;
+      }
+
+      #cap {
+        position: fixed;
+        z-index: 2;
+        top: calc(env(safe-area-inset-top, 0px) + 2.6vh);
+        left: 0;
+        right: 0;
+        text-align: center;
+        font: italic 600 clamp(1.1rem, 4.5vw, 1.6rem)/1 var(--serif);
+        color: var(--gold);
+        opacity: 0;
+        transition: opacity 2s 1.6s;
+        pointer-events: none;
+      }
+
+      .open #cap {
+        opacity: 0.95;
+      }
+
+      #panel {
+        position: fixed;
+        z-index: 2;
+        left: 50%;
+        top: 29vh;
+        transform: translateX(-50%);
+        width: min(88vw, 520px);
+        text-align: center;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: rgba(14, 4, 28, 0.5);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 203, 92, 0.3);
+        opacity: 0;
+        transition: opacity 1.5s 3.2s;
+        pointer-events: none;
+      }
+
+      .open #panel {
+        opacity: 1;
+      }
+
+      #msg {
+        margin: 0;
+        white-space: pre-line;
+        font-size: clamp(1rem, 3.9vw, 1.2rem);
+        line-height: 1.65;
+        min-height: 6.6em;
+        text-align: left;
+      }
+
+      #wish {
+        display: none;
+        margin: 12px auto 0;
+        pointer-events: auto;
+        padding: 11px 22px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #ffd978, #ff9d3b);
+        color: #2c0f00;
+        font: 600 1rem var(--sans);
+        cursor: pointer;
+        box-shadow: 0 0 22px rgba(255, 170, 60, 0.5);
+      }
+
+      #wish.show {
+        display: inline-block;
+      }
+
+      #wish:disabled {
+        opacity: 0.7;
+        cursor: default;
+      }
+
+      #hint {
+        position: fixed;
+        z-index: 2;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 1.2vh);
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 0.8rem;
+        opacity: 0;
+        transition: opacity 2s 6s;
+        pointer-events: none;
+      }
+
+      .open #hint {
+        opacity: 0.6;
+      }
+
+      #snd {
+        position: fixed;
+        z-index: 6;
+        top: calc(env(safe-area-inset-top, 0px) + 10px);
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 203, 92, 0.5);
+        background: rgba(14, 4, 28, 0.6);
+        color: var(--ink);
+        font-size: 1.05rem;
+        cursor: pointer;
+        display: none;
+      }
+
+      .open #snd {
+        display: block;
+      }
+
+      .door {
+        position: fixed;
+        z-index: 4;
+        top: 0;
+        bottom: 0;
+        width: 50%;
+        background:
+          radial-gradient(
+              circle,
+              rgba(255, 203, 92, 0.3) 1.5px,
+              transparent 2px
+            )
+            0 0/28px 28px,
+          linear-gradient(#3a0a2c, #16041a);
+        transition: transform 2.2s cubic-bezier(0.75, 0, 0.2, 1) 0.15s;
+      }
+
+      .door::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border: 1px solid rgba(255, 203, 92, 0.6);
+      }
+
+      .door.l {
+        left: 0;
+        border-right: 3px solid var(--gold);
+      }
+
+      .door.l::after {
+        right: 10px;
+      }
+
+      .door.r {
+        right: 0;
+        border-left: 3px solid var(--gold);
+      }
+
+      .door.r::after {
+        left: 10px;
+      }
+
+      .open .l {
+        transform: translateX(-101%);
+      }
+
+      .open .r {
+        transform: translateX(101%);
+      }
+
+      #setup {
+        position: fixed;
+        z-index: 5;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        transition: opacity 0.6s;
+      }
+
+      #setup.off {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .card {
+        width: min(100%, 370px);
+        padding: 28px 24px 24px;
+        border-radius: 20px;
+        background: var(--card);
+        border: 1px solid rgba(255, 203, 92, 0.55);
+        box-shadow: 0 0 60px rgba(255, 140, 40, 0.28);
+        text-align: center;
+      }
+
+      .lamp {
+        font-size: 2.6rem;
+        display: inline-block;
+        animation: fl 1.6s ease-in-out infinite;
+        filter: drop-shadow(0 0 14px rgba(255, 170, 50, 0.9));
+      }
+
+      @keyframes fl {
+        50% {
+          transform: scale(1.1) rotate(-3deg);
+          filter: drop-shadow(0 0 22px rgba(255, 190, 70, 1));
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .lamp {
+          animation: none;
+        }
+
+        .door {
+          transition-duration: 0.01s;
+        }
+      }
+
+      .card h1 {
+        margin: 6px 0 4px;
+        font: 700 1.75rem/1.15 var(--serif);
+        color: var(--gold);
+      }
+
+      .card p {
+        margin: 0 0 6px;
+        font-size: 0.95rem;
+        opacity: 0.8;
+      }
+
+      label {
+        display: block;
+        text-align: left;
+        font-size: 0.88rem;
+        margin: 14px 0 5px;
+        color: #ffe3a6;
+      }
+
+      input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 203, 92, 0.5);
+        background: #1c0a35;
+        color: var(--ink);
+        font: 1rem var(--sans);
+      }
+
+      input:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 2px;
+      }
+
+      #go {
+        margin-top: 22px;
+        width: 100%;
+        padding: 14px;
+        border: 0;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #ffd978, #ff9d3b);
+        color: #2c0f00;
+        font: 700 1.05rem var(--sans);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="c"></canvas>
+    <div id="cap">Happy Diwali</div>
+    <div id="panel">
+      <p id="msg"></p>
+      <button id="wish">Make a wish ✨</button>
+    </div>
+    <div id="hint">
+      A Little sparkle for the sky, a little warmth for your heart.✨❤️.
+    </div>
+    <button id="snd" aria-label="Sound on or off">🔊</button>
+    <div class="door l"></div>
+    <div class="door r"></div>
+    <div id="setup">
+      <div class="card">
+        <span class="lamp">🪔</span>
+        <h1>A Little surprise For You ✨🎉</h1>
+        <p>Something special</p>
+        <label for="you">Your name</label>
+        <input
+          id="you"
+          maxlength="22"
+          autocomplete="off"
+          placeholder="Type your name :"
+        />
+        <label for="frm">Friend’s name</label>
+        <input id="frm" maxlength="22" autocomplete="off" />
+        <button id="go">Reveal your Surprise 🎉</button>
+      </div>
+    </div>
+    <script>
+      // ====== APNA NAAM YAHAN BADLO (jo bhej raha hai) ======
+      const DEFAULT_FROM = "Ashu";
+      // =======================================================
+      const $ = (id) => document.getElementById(id);
+      const cv = $("c"),
+        ctx = cv.getContext("2d");
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let W,
+        H,
+        hor,
+        dpr = Math.min(devicePixelRatio || 1, 2);
+      let started = false,
+        t0 = 0,
+        nameT0 = 0,
+        auto = 0,
+        lightN = 0,
+        to = "",
+        from = "",
+        wished = false;
+      const diyas = [],
+        parts = [],
+        rockets = [],
+        stars = [],
+        lanterns = [],
+        bld = [],
+        wins = [],
+        name = [];
+      let rg = { x: 0, y: 0, r: 0 };
+      $("frm").value = DEFAULT_FROM;
+
+      /* ---------- sound ---------- */
+      let ac,
+        muted = false;
+      function audio() {
+        if (!ac) {
+          try {
+            ac = new (window.AudioContext || window.webkitAudioContext)();
+          } catch (e) {}
+        }
+        if (ac && ac.resume) ac.resume();
+      }
+      function noise(dur, freq, vol) {
+        if (!ac || muted) return;
+        const n = Math.floor(ac.sampleRate * dur),
+          b = ac.createBuffer(1, n, ac.sampleRate),
+          d = b.getChannelData(0);
+        for (let i = 0; i < n; i++)
+          d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2);
+        const s = ac.createBufferSource();
+        s.buffer = b;
+        const f = ac.createBiquadFilter();
+        f.type = "lowpass";
+        f.frequency.value = freq;
+        const g = ac.createGain();
+        g.gain.value = vol;
+        s.connect(f);
+        f.connect(g);
+        g.connect(ac.destination);
+        s.start();
+      }
+      function boom() {
+        noise(0.9, 360, 0.5);
+        setTimeout(() => noise(0.3, 4500, 0.07), 140);
+      }
+      const penta = [523, 587, 659, 784, 880, 1047];
+      function chime(i) {
+        if (!ac || muted) return;
+        const o = ac.createOscillator(),
+          g = ac.createGain();
+        o.type = "sine";
+        o.frequency.value = penta[i % penta.length];
+        g.gain.setValueAtTime(0.0001, ac.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.18, ac.currentTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 1.6);
+        o.connect(g);
+        g.connect(ac.destination);
+        o.start();
+        o.stop(ac.currentTime + 1.7);
+      }
+      $("snd").addEventListener("click", () => {
+        muted = !muted;
+        $("snd").textContent = muted ? "🔇" : "🔊";
+      });
+
+      /* ---------- layout ---------- */
+      function resize() {
+        W = innerWidth;
+        H = innerHeight;
+        hor = H * 0.66;
+        cv.width = W * dpr;
+        cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        stars.length = 0;
+        for (let i = 0; i < 120; i++)
+          stars.push({
+            x: Math.random() * W,
+            y: Math.random() * hor,
+            r: Math.random() * 1.4,
+            p: Math.random() * 6,
+          });
+        lanterns.length = 0;
+        for (let i = 0; i < 7; i++)
+          lanterns.push({
+            x: Math.random() * W,
+            y: H * (0.3 + Math.random() * 0.7),
+            s: 0.5 + Math.random() * 0.7,
+            v: 0.1 + Math.random() * 0.15,
+            p: Math.random() * 6,
+          });
+        bld.length = 0;
+        wins.length = 0;
+        let x = -10;
+        while (x < W) {
+          const w = 24 + Math.random() * 44,
+            h = H * (0.04 + Math.random() * 0.11);
+          bld.push({ x, w, h, dome: Math.random() < 0.3 });
+          for (let wx = x + 6; wx < x + w - 8; wx += 11)
+            for (let wy = hor - h + 10; wy < hor - 8; wy += 14)
+              if (Math.random() < 0.35)
+                wins.push({
+                  x: wx,
+                  y: wy,
+                  at: 2500 + Math.random() * 9000,
+                  p: Math.random() * 6,
+                });
+          x += w + 2 + Math.random() * 6;
+        }
+        const Rr = Math.min(W * 0.26, H * 0.2);
+        rg = { x: W / 2, y: H * 0.82, r: Rr };
+        diyas.length = 0;
+        for (let i = 0; i < 10; i++) {
+          const a = (Math.PI * 2 * i) / 10 + 0.3;
+          diyas.push({
+            x: rg.x + Math.cos(a) * Rr * 1.5,
+            y: rg.y + Math.sin(a) * Rr * 1.5 * 0.38,
+            s: 0.75 + (0.3 * (Math.sin(a) + 1)) / 2,
+            lit: false,
+            t: Math.random() * 9,
+          });
+        }
+        diyas.sort((a, b) => a.y - b.y);
+        diyas.forEach((d, i) => {
+          d.lit = i < lightN;
+        });
+        if (name.length) buildName();
+      }
+      addEventListener("resize", resize);
+      resize();
+
+      /* ---------- name written in light ---------- */
+      function buildName() {
+        const oc = document.createElement("canvas"),
+          o = oc.getContext("2d"),
+          font = (s) => `700 ${s}px "Cormorant Garamond",Georgia,serif`;
+        let fs = Math.min(H * 0.16, 150);
+        o.font = font(fs);
+        const w = o.measureText(to).width;
+        if (w > W * 0.88) fs *= (W * 0.88) / w;
+        oc.width = Math.ceil(W);
+        oc.height = Math.ceil(fs * 1.4);
+        o.font = font(fs);
+        o.textAlign = "center";
+        o.textBaseline = "middle";
+        o.fillStyle = "#fff";
+        o.fillText(to, W / 2, oc.height / 2);
+        const img = o.getImageData(0, 0, oc.width, oc.height).data;
+        let step = Math.max(2, Math.round(fs / 38)),
+          pts;
+        do {
+          pts = [];
+          for (let y = 0; y < oc.height; y += step)
+            for (let x = 0; x < oc.width; x += step)
+              if (img[(y * oc.width + x) * 4 + 3] > 140) pts.push([x, y]);
+          step++;
+        } while (pts.length > 1700);
+        const oy = H * 0.17 - oc.height / 2;
+        name.length = 0;
+        pts.forEach(([x, y]) =>
+          name.push({
+            x: Math.random() * W,
+            y: H + Math.random() * 60,
+            tx: x,
+            ty: y + oy,
+            d: Math.random() * 1800,
+            p: Math.random() * 6,
+            c: Math.random() < 0.3 ? "#ffe9a8" : "#ffc54d",
+          }),
+        );
+      }
+
+      /* ---------- fireworks ---------- */
+      const hues = [28, 45, 340, 290, 190, 12, 320];
+      function ring(x, y, h, n, sp) {
+        for (let i = 0; i < n; i++) {
+          const a = (Math.PI * 2 * i) / n;
+          parts.push({
+            x,
+            y,
+            vx: Math.cos(a) * sp,
+            vy: Math.sin(a) * sp,
+            life: 1,
+            h: h + Math.random() * 25,
+          });
+        }
+      }
+      function heart(x, y) {
+        const n = reduce ? 36 : 72;
+        for (let i = 0; i < n; i++) {
+          const a = (Math.PI * 2 * i) / n,
+            s = Math.sin(a);
+          parts.push({
+            x,
+            y,
+            vx: 16 * s * s * s * 0.19,
+            vy:
+              -(
+                13 * Math.cos(a) -
+                5 * Math.cos(2 * a) -
+                2 * Math.cos(3 * a) -
+                Math.cos(4 * a)
+              ) * 0.19,
+            life: 1.15,
+            h: 345,
+            g: 0.012,
+            d: 0.99,
+          });
+        }
+      }
+      function burst(x, y, k) {
+        boom();
+        const h = hues[(Math.random() * hues.length) | 0];
+        if (k === "heart") heart(x, y);
+        else if (k === "willow") {
+          for (let i = 0; i < (reduce ? 30 : 70); i++) {
+            const a = Math.random() * 7,
+              s = 1 + Math.random() * 2.8;
+            parts.push({
+              x,
+              y,
+              vx: Math.cos(a) * s,
+              vy: Math.sin(a) * s,
+              life: 1.7,
+              h: 42,
+              g: 0.035,
+              d: 0.975,
+              ld: 0.007,
+            });
+          }
+        } else {
+          ring(x, y, h, reduce ? 30 : 80, 2 + Math.random() * 2.5);
+          if (!reduce && Math.random() < 0.5) ring(x, y, h + 40, 40, 1.2);
+        }
+      }
+      function launch(x, k) {
+        rockets.push({
+          x,
+          y: H * 0.7,
+          ty: H * (0.3 + Math.random() * 0.18),
+          vy: -9,
+          k,
+        });
+      }
+      function lightDiya(d) {
+        if (d.lit) return;
+        d.lit = true;
+        chime(diyas.indexOf(d));
+        for (let i = 0; i < 12; i++)
+          parts.push({
+            x: d.x,
+            y: d.y - 14 * d.s,
+            vx: (Math.random() - 0.5) * 1.6,
+            vy: -Math.random() * 2,
+            life: 0.7,
+            h: 40,
+            g: -0.01,
+          });
+      }
+      cv.addEventListener("pointerdown", (e) => {
+        if (!started) return;
+        const d = diyas.find(
+          (d) =>
+            Math.abs(e.clientX - d.x) < 30 * d.s &&
+            e.clientY > d.y - 40 * d.s &&
+            e.clientY < d.y + 26 * d.s,
+        );
+        if (d) {
+          lightDiya(d);
+          lightN = Math.max(lightN, diyas.filter((q) => q.lit).length);
+          return;
+        }
+        launch(e.clientX, "heart");
+      });
+
+      /* ---------- drawing ---------- */
+      function rangoli(t) {
+        const k = Math.min(1, (t - t0 - 1500) / 3500);
+        if (k <= 0) return;
+        const e = 1 - Math.pow(1 - k, 3),
+          R = rg.r * e;
+        ctx.save();
+        ctx.translate(rg.x, rg.y);
+        ctx.scale(1, 0.38);
+        ctx.rotate(t / 11000);
+        [
+          [16, 1, "#ff5d8f"],
+          [12, 0.78, "#ffb43a"],
+          [8, 0.55, "#8a5cff"],
+          [6, 0.34, "#ff6a2a"],
+          [5, 0.16, "#ffe27a"],
+        ].forEach(([n, s, c], li) => {
+          ctx.fillStyle = c;
+          ctx.globalAlpha = (0.6 + li * 0.07) * e;
+          for (let i = 0; i < n; i++) {
+            ctx.save();
+            ctx.rotate((Math.PI * 2 * i) / n + li * 0.2);
+            ctx.beginPath();
+            ctx.ellipse(0, -R * s * 0.62, R * s * 0.2, R * s * 0.38, 0, 0, 7);
+            ctx.fill();
+            ctx.restore();
+          }
+        });
+        ctx.globalAlpha = e;
+        ctx.fillStyle = "#fff1b8";
+        for (let i = 0; i < 28; i++) {
+          const a = (Math.PI * 2 * i) / 28;
+          ctx.beginPath();
+          ctx.arc(Math.cos(a) * R * 1.14, Math.sin(a) * R * 1.14, 3.2, 0, 7);
+          ctx.fill();
+        }
+        ctx.strokeStyle = "#ffe6a0";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, R * 1.22, 0, 7);
+        ctx.stroke();
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      }
+      function diya(d, t) {
+        ctx.save();
+        ctx.translate(d.x, d.y);
+        ctx.scale(d.s, d.s);
+        ctx.fillStyle = "#b4531a";
+        ctx.beginPath();
+        ctx.moveTo(-24, 0);
+        ctx.quadraticCurveTo(0, 24, 24, 0);
+        ctx.quadraticCurveTo(0, 6, -24, 0);
+        ctx.fill();
+        ctx.fillStyle = "#e07a2f";
+        ctx.fillRect(-22, -2, 44, 4);
+        if (d.lit) {
+          const f = 1 + Math.sin(t / 120 + d.t) * 0.12,
+            g = ctx.createRadialGradient(0, -12, 2, 0, -12, 70 * f);
+          g.addColorStop(0, "rgba(255,190,70,.75)");
+          g.addColorStop(1, "rgba(255,120,20,0)");
+          ctx.fillStyle = g;
+          ctx.fillRect(-85, -95, 170, 170);
+          ctx.fillStyle = "#fff3b0";
+          ctx.beginPath();
+          ctx.ellipse(0, -12, 5 * f, 11 * f, 0, 0, 7);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      function lantern(l, t) {
+        const span = H * 1.2,
+          yy = ((((l.y - (t * l.v) / 16) % span) + span) % span) - H * 0.1,
+          x = l.x + Math.sin(t / 1400 + l.p) * 14,
+          w = 22 * l.s,
+          h = 30 * l.s;
+        const g = ctx.createRadialGradient(x, yy, 2, x, yy, w * 2.6);
+        g.addColorStop(0, "rgba(255,170,60,.4)");
+        g.addColorStop(1, "rgba(255,120,20,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(x - w * 3, yy - w * 3, w * 6, w * 6);
+        ctx.fillStyle = "rgba(255,150,40,.9)";
+        ctx.beginPath();
+        ctx.ellipse(x, yy, w, h, 0, 0, 7);
+        ctx.fill();
+      }
+
+      /* ---------- message ---------- */
+      const typed = { text: "", i: 0, next: 0, done: false };
+      function say(s) {
+        typed.text = s;
+        typed.i = 0;
+        typed.done = false;
+      }
+      function intro() {
+        say(
+          to +
+            ", Happy Diwali Bestfriend ❤️🪔 May your life always shine as bright as these lights . Wishing you a diwali as beautiful as your heart.💝Thank you for being my bestfriend. 💛\n— " +
+            from,
+        );
+      }
+
+      let last = 0;
+      function frame(t) {
+        const dt = Math.min((t - last) / 16.7 || 1, 3);
+        last = t;
+        ctx.clearRect(0, 0, W, H);
+        for (const s of stars) {
+          ctx.globalAlpha = 0.35 + 0.45 * Math.sin(t / 700 + s.p);
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(s.x, s.y, s.r, s.r);
+        }
+        ctx.globalAlpha = 1;
+        const mx = W * 0.82,
+          my = hor * 0.2,
+          mg = ctx.createRadialGradient(mx, my, 6, mx, my, 60);
+        mg.addColorStop(0, "rgba(255,240,200,.5)");
+        mg.addColorStop(1, "rgba(255,240,200,0)");
+        ctx.fillStyle = mg;
+        ctx.fillRect(mx - 70, my - 70, 140, 140);
+        ctx.fillStyle = "#fff4d6";
+        ctx.beginPath();
+        ctx.arc(mx, my, 14, 0, 7);
+        ctx.fill();
+        if (started) lanterns.forEach((l) => lantern(l, t));
+        ctx.fillStyle = "#08020f";
+        for (const b of bld) {
+          ctx.fillRect(b.x, hor - b.h, b.w, b.h + 2);
+          if (b.dome) {
+            ctx.beginPath();
+            ctx.arc(b.x + b.w / 2, hor - b.h, b.w * 0.36, Math.PI, 0);
+            ctx.fill();
+            ctx.fillRect(b.x + b.w / 2 - 1, hor - b.h - b.w * 0.36 - 8, 2, 8);
+          }
+        }
+        if (started)
+          for (const w of wins)
+            if (t - t0 > w.at) {
+              ctx.fillStyle = `rgba(255,205,110,${0.55 + 0.3 * Math.sin(t / 900 + w.p)})`;
+              ctx.fillRect(w.x, w.y, 4, 6);
+            }
+        const gg = ctx.createLinearGradient(0, hor, 0, H);
+        gg.addColorStop(0, "#2a0836");
+        gg.addColorStop(1, "#0a0212");
+        ctx.fillStyle = gg;
+        ctx.fillRect(0, hor, W, H - hor);
+        if (started) rangoli(t);
+        if (name.length) {
+          ctx.globalCompositeOperation = "lighter";
+          const el = t - nameT0;
+          for (const p of name) {
+            if (el < p.d) continue;
+            p.x += (p.tx - p.x) * 0.05 * dt;
+            p.y += (p.ty - p.y) * 0.05 * dt;
+            ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t / 300 + p.p);
+            ctx.fillStyle = p.c;
+            ctx.fillRect(p.x - 1, p.y - 1, 2.6, 2.6);
+          }
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "source-over";
+        }
+        for (let i = rockets.length - 1; i >= 0; i--) {
+          const r = rockets[i];
+          r.y += r.vy * dt;
+          ctx.fillStyle = "#ffe9a8";
+          ctx.fillRect(r.x - 1, r.y, 2, 9);
+          if (r.y <= r.ty) {
+            burst(r.x, r.y, r.k);
+            rockets.splice(i, 1);
+          }
+        }
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = parts.length - 1; i >= 0; i--) {
+          const p = parts[i],
+            d = p.d ?? 0.985;
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.vy += (p.g ?? 0.05) * dt;
+          p.vx *= d;
+          if (p.g !== undefined) p.vy *= d;
+          p.life -= (p.ld ?? 0.011) * dt;
+          if (p.life <= 0) {
+            parts.splice(i, 1);
+            continue;
+          }
+          ctx.fillStyle = `hsla(${p.h},100%,62%,${Math.min(1, p.life)})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2.3 * Math.min(1, p.life) + 0.5, 0, 7);
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = "source-over";
+        for (const d of diyas) diya(d, t);
+        if (started) {
+          if (t > auto) {
+            auto = t + (reduce ? 4200 : 2400);
+            launch(
+              W * (0.12 + Math.random() * 0.76),
+              ["ring", "heart", "willow"][(Math.random() * 3) | 0],
+            );
+          }
+          if (lightN < diyas.length && t - t0 > 2600 + lightN * 450) {
+            lightDiya(diyas[lightN]);
+            lightN++;
+          }
+          if (t - t0 > 3800 && !typed.done && t > typed.next) {
+            typed.i++;
+            typed.next = t + 32;
+            $("msg").textContent = typed.text.slice(0, typed.i);
+            if (typed.i >= typed.text.length) {
+              typed.done = true;
+              if (!wished) $("wish").classList.add("show");
+            }
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+
+      /* ---------- start & wish ---------- */
+      function start() {
+        if (started) return;
+        to = $("you").value.trim() || "Dost";
+        from = $("frm").value.trim() || DEFAULT_FROM;
+        audio();
+        started = true;
+        t0 = performance.now();
+        auto = t0 + 3000;
+        $("setup").classList.add("off");
+        document.body.classList.add("open");
+        intro();
+        const go = () => {
+          nameT0 = performance.now();
+          buildName();
+        };
+        setTimeout(() => {
+          (document.fonts
+            ? document.fonts.load('700 100px "Cormorant Garamond"')
+            : Promise.resolve()
+          ).then(go, go);
+        }, 900);
+        [0, 300, 600].forEach((d, i) =>
+          setTimeout(() => launch(W * (0.22 + i * 0.28), "heart"), 1400 + d),
+        );
+      }
+      $("go").addEventListener("click", start);
+      ["you", "frm"].forEach((id) =>
+        $(id).addEventListener("keydown", (e) => {
+          if (e.key === "Enter") start();
+        }),
+      );
+      $("wish").addEventListener("click", () => {
+        if (wished) return;
+        wished = true;
+        $("wish").disabled = true;
+        $("wish").textContent = "Tap anywhere for fireworks  ✨";
+        audio();
+        for (let i = 0; i < 14; i++)
+          setTimeout(
+            () =>
+              launch(
+                W * (0.1 + Math.random() * 0.8),
+                ["heart", "willow", "ring"][i % 3],
+              ),
+            i * 350,
+          );
+        say(
+          " " +
+            to +
+            ", I hope all your wishes come true And here is a little wish from my side- may our friendship always stay this beautiful,no matter how many miles keep us part.❤️\n Keep Shining ,Keep smiling , and never stop being you !\n Your bestfrnd " +
+            from +
+            "  ✨",
+        );
+      });
+    </script>
+  </body>
+</html>
